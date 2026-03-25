@@ -1,0 +1,84 @@
+table DIM-Calendar
+	lineageTag: 37c736bb-89e5-48b2-848b-77427b566b8b
+	dataCategory: Time
+
+	column Date
+		isKey
+		formatString: General Date
+		lineageTag: 33846273-ea1e-458e-ae38-ec3d2d10fe3f
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Date]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Année
+		formatString: 0
+		lineageTag: 6f90abc2-d1bc-414c-bb11-6c1ed66204bb
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Année]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Mois
+		lineageTag: d63a3a0d-85d2-4a48-903a-27375e165ef1
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Mois]
+		sortByColumn: 'Numéro Mois'
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Numéro Mois'
+		formatString: 0
+		lineageTag: 48beffca-f84e-48c6-b5eb-d14c97e012ac
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Numéro Mois]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Trimestre
+		lineageTag: 29cb4a8c-02d6-44d8-9344-1f737d01c681
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Trimestre]
+
+		annotation SummarizationSetBy = Automatic
+
+	hierarchy 'Année Hiérarchie'
+		lineageTag: 6bc71ce8-9b9f-41cf-8428-3d2f4a4607f1
+
+		level Année
+			lineageTag: daac2e9b-b612-4f5f-ac3a-a49adf1c70a2
+			column: Année
+
+		level Trimestre
+			lineageTag: 41126113-8127-45d4-93b6-65841f5b519e
+			column: Trimestre
+
+		level Mois
+			lineageTag: 76bc8671-5c1b-41ce-bcdf-4a188942b38c
+			column: Mois
+
+		level Date
+			lineageTag: 0af908c5-d66a-4f99-873e-d9d4c4b849eb
+			column: Date
+
+	partition DIM-Calendar = calculated
+		mode: import
+		source = ```
+				
+				ADDCOLUMNS(
+				    CALENDARAUTO(),
+				    "Année", YEAR([Date]),
+				    "Mois", FORMAT([Date], "MMMM"),
+				    "Numéro Mois", MONTH([Date]),
+				    "Trimestre", "T" & FORMAT([Date], "Q")
+				)
+				
+				```
+
+	annotation PBI_Id = f2d119a3745443189815655cd004b347
+

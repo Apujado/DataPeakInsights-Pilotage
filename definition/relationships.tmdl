@@ -1,0 +1,61 @@
+relationship 98cfb425-1a81-46e2-9bac-eef7ccb19056
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'DIM TACHES'.'Date de début'
+	toColumn: LocalDateTable_cb1d2e3c-354c-4d99-b757-1c0ce89dd0d9.Date
+
+relationship 53c07d99-ce31-44d1-9039-9db1a181c09c
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'DIM TACHES'.'Date Limite'
+	toColumn: LocalDateTable_823fa5e9-584b-4e9b-9a01-e0ff79017cb3.Date
+
+relationship be993405-f3a3-4ddf-8fb1-06cbf6e3005c
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'DIM TACHES'.'Date de Fin'
+	toColumn: LocalDateTable_4a3e413e-acc9-4c34-b523-a212794c3d7b.Date
+
+relationship 0201b8db-dba5-40cd-b156-cd0cdc2fdfb1
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'DIM MISSIONS'.'Date de fin'
+	toColumn: LocalDateTable_e7b31b25-eee7-4ace-8b04-83d8f0fd5e9a.Date
+
+relationship 216741be-834f-1d4e-4ecb-a30e6194f074
+	fromColumn: 'FACT ACTIVITES'.'ID Client'
+	toColumn: 'DIM CLIENTS'.'ID Client'
+
+relationship 3cf2cf04-23c4-f588-cde0-d545ee33420c
+	fromColumn: 'FACT ACTIVITES'.Dâte
+	toColumn: DIM-Calendar.Date
+
+relationship 0364dc23-ab7d-8a19-4c9d-c58d49eca41c
+	fromColumn: 'DIM TACHES'.'records.id'
+	toColumn: 'DIM MISSIONS'.'records.id Taches'
+
+relationship 0de1e03d-1c0e-b33a-ce42-84953746e0be
+	fromColumn: 'FACT ACTIVITES'.'ID Missions'
+	toColumn: 'DIM MISSIONS'.'ID Missions'
+
+relationship 4005a6dd-4016-df2b-5af9-71402e2375d5
+	crossFilteringBehavior: bothDirections
+	fromCardinality: one
+	fromColumn: 'DIM CLIENTS'.'ID Prospects'
+	toColumn: 'DIM PROSPECTION'.'records.fields.ID Prospects'
+
+relationship 2208f351-ca8f-c47b-c2d4-43f2aeeaa8f5
+	fromColumn: 'FACT Business Plan'.'Fin de Mois'
+	toColumn: DIM-Calendar.Date
+
+relationship 85febdec-2968-145f-3b57-9a50c383597e
+	isActive: false
+	fromColumn: 'DIM PROSPECTION'.'records.fields.Date 1er contact'
+	toColumn: DIM-Calendar.Date
+
+relationship 3f33c5bc-461f-177b-ab3d-cfd7809e1a99
+	isActive: false
+	fromColumn: 'DIM CLIENTS'.'Date Création'
+	toColumn: DIM-Calendar.Date
+
+relationship 003f9fde-6f02-e07b-bf50-345d76e5b70f
+	isActive: false
+	fromColumn: 'DIM MISSIONS'.'Date de début'
+	toColumn: DIM-Calendar.Date
+

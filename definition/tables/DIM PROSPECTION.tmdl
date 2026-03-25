@@ -1,0 +1,117 @@
+table 'DIM PROSPECTION'
+	lineageTag: 5a9f78fa-5b4b-432e-b38a-78a46ffd35bf
+
+	column 'records.id'
+		dataType: string
+		displayFolder: Records
+		lineageTag: 4edca5ad-a492-4ad8-8740-66a18aa6f337
+		summarizeBy: none
+		sourceColumn: records.id
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'records.fields.Date 1er contact'
+		dataType: dateTime
+		formatString: Long Date
+		displayFolder: Prospect
+		lineageTag: 0c8b2782-19b2-4580-8909-0dec9de4c85b
+		summarizeBy: none
+		sourceColumn: records.fields.Date 1er contact
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'records.fields.ID Prospects'
+		dataType: string
+		displayFolder: Clés
+		lineageTag: a52dc0a2-1356-421f-bc71-9009fc77a46e
+		summarizeBy: none
+		sourceColumn: records.fields.ID Prospects
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'records.fields.Statut'
+		dataType: string
+		displayFolder: Prospect
+		lineageTag: c64f04c0-3704-4842-8839-8f7f74eac2ca
+		summarizeBy: none
+		sourceColumn: records.fields.Statut
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'records.fields.Type'
+		dataType: string
+		displayFolder: Prospect
+		lineageTag: 8db292aa-4eb6-455a-ae05-2d6b6fada70c
+		summarizeBy: none
+		sourceColumn: records.fields.Type
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'records.fields.Transformation '
+		dataType: string
+		displayFolder: Prospect
+		lineageTag: f3d1d951-0b9e-407a-8347-df0276b8e77d
+		summarizeBy: none
+		sourceColumn: "records.fields.Transformation "
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'records.fields.Noms Prospects'
+		dataType: string
+		displayFolder: Prospect
+		lineageTag: 79845939-5ad1-40b7-8b00-45daac7a0a01
+		summarizeBy: none
+		sourceColumn: records.fields.Noms Prospects
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'records.fields.Clients'
+		dataType: string
+		displayFolder: Records
+		lineageTag: 6bd0ae3f-77e0-40d4-a336-1dea4bfdc692
+		summarizeBy: none
+		sourceColumn: records.fields.Clients
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'records.fields.Num Prospects'
+		dataType: int64
+		formatString: 0
+		lineageTag: 35def4cd-9172-4410-af0e-b5d447d16156
+		summarizeBy: sum
+		sourceColumn: records.fields.Num Prospects
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'DIM PROSPECTION' = m
+		mode: import
+		source =
+				let
+				    Source = Json.Document(
+				        Web.Contents(
+				            "https://api.airtable.com",
+				            [
+				                RelativePath = "/v0/apph9UsvVXAEbLv6P/tbluSUrzLQ907x0TS",
+				                Query = [ view = "MainView" ],
+				                Headers = [ Authorization = "Bearer " & AirTableToken ]
+				            ]
+				        )
+				    ),
+				
+				    #"Converti en table" = Table.FromRecords({Source}),
+				    #"records développé" = Table.ExpandListColumn(#"Converti en table", "records"),
+				    #"records développé1" = Table.ExpandRecordColumn(#"records développé", "records", {"id", "createdTime", "fields"}, {"records.id", "records.createdTime", "records.fields"}),
+				    #"records.fields développé" = Table.ExpandRecordColumn(#"records développé1", "records.fields", {"Contact", "Date 1er contact", "ID Prospects", "Portable contact", "Mail contact", "Lien ", "Statut", "Commentaires", "Date de relance ", "Type", "Transformation ", "Noms Prospects", "Num Prospects", "Clients"}, {"records.fields.Contact", "records.fields.Date 1er contact", "records.fields.ID Prospects", "records.fields.Portable contact", "records.fields.Mail contact", "records.fields.Lien ", "records.fields.Statut", "records.fields.Commentaires", "records.fields.Date de relance ", "records.fields.Type", "records.fields.Transformation ", "records.fields.Noms Prospects", "records.fields.Num Prospects", "records.fields.Clients"}),
+				    #"Type modifié" = Table.TransformColumnTypes(#"records.fields développé",{{"records.id", type text}, {"records.createdTime", type datetime}, {"records.fields.Contact", type text}, {"records.fields.Date 1er contact", type date}, {"records.fields.ID Prospects", type text}, {"records.fields.Portable contact", type text}, {"records.fields.Mail contact", type text}, {"records.fields.Lien ", type text}, {"records.fields.Statut", type text}, {"records.fields.Commentaires", type text}, {"records.fields.Date de relance ", type date}, {"records.fields.Type", type text}, {"records.fields.Transformation ", type text}, {"records.fields.Noms Prospects", type text}, {"records.fields.Num Prospects", Int64.Type}, {"records.fields.Clients", type any}}),
+				    #"Colonnes supprimées" = Table.RemoveColumns(#"Type modifié",{"records.createdTime", "records.fields.Contact", "records.fields.Portable contact", "records.fields.Mail contact", "records.fields.Lien ", "records.fields.Commentaires"}),
+				    #"records.fields.Clients développé" = Table.ExpandListColumn(#"Colonnes supprimées", "records.fields.Clients"),
+				    #"Colonnes supprimées1" = Table.RemoveColumns(#"records.fields.Clients développé",{"records.fields.Date de relance "})
+				in
+				    #"Colonnes supprimées1"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,208 @@
+table 'FACT ACTIVITES'
+	lineageTag: 2d74c8f9-49a7-49ba-9786-54940465608a
+
+	column 'records.id'
+		dataType: string
+		displayFolder: Records
+		lineageTag: 7ec13c5f-60c1-4ebb-bf81-efcec7dbea49
+		summarizeBy: none
+		sourceColumn: records.id
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'ID ACTI'
+		dataType: string
+		displayFolder: Clés
+		lineageTag: 2040bd0f-0d37-42a2-9ae7-d2e824ea8787
+		summarizeBy: none
+		sourceColumn: ID ACTI
+
+		annotation SummarizationSetBy = Automatic
+
+	column Client/Fournisseur
+		dataType: string
+		displayFolder: Activité
+		lineageTag: 10caba64-232c-44fb-aea9-c7407c4a32a0
+		summarizeBy: none
+		sourceColumn: Client/Fournisseur
+
+		annotation SummarizationSetBy = Automatic
+
+	column Statut
+		dataType: string
+		displayFolder: Activité
+		lineageTag: 18b0ddcc-09f8-44a5-8826-7e01afbe735b
+		summarizeBy: none
+		sourceColumn: Statut
+
+		annotation SummarizationSetBy = Automatic
+
+	column Dâte
+		dataType: dateTime
+		formatString: Long Date
+		displayFolder: Activité
+		lineageTag: 8b2a5d51-2539-42dc-b1b1-cbcd71dd31c6
+		summarizeBy: none
+		sourceColumn: Dâte
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Mode de Règlement'
+		dataType: string
+		displayFolder: Activité
+		lineageTag: 3d59bdfe-9896-4b55-b846-b337457d386c
+		summarizeBy: none
+		sourceColumn: Mode de Règlement
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Montant HT'
+		dataType: double
+		formatString: #,0.00\ "€";-#,0.00\ "€";#,0.00\ "€"
+		displayFolder: Activité
+		lineageTag: 2c5c185a-a091-4515-be5f-e5bbb85a6297
+		summarizeBy: sum
+		sourceColumn: Montant HT
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"fr-FR"}
+
+	column 'Montant TTC'
+		dataType: double
+		formatString: #,0.00\ "€";-#,0.00\ "€";#,0.00\ "€"
+		displayFolder: Activité
+		lineageTag: 66daca31-3942-4f76-aa56-1462b94f69a6
+		summarizeBy: sum
+		sourceColumn: Montant TTC
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"fr-FR"}
+
+	column 'Taux TVA'
+		dataType: double
+		formatString: 0.00\ %;-0.00\ %;0.00\ %
+		displayFolder: Activité
+		lineageTag: c8187d88-89b1-4e2a-add2-94951d443aab
+		summarizeBy: sum
+		sourceColumn: Taux TVA
+
+		annotation SummarizationSetBy = Automatic
+
+	column Catégories
+		dataType: string
+		displayFolder: Activité
+		lineageTag: b11d8ea5-bd12-44ef-85d2-b50732688fa4
+		summarizeBy: none
+		sourceColumn: Catégories
+
+		annotation SummarizationSetBy = Automatic
+
+	column Type
+		dataType: string
+		displayFolder: Activité
+		lineageTag: d3b4734a-4e17-44aa-b737-76b78abcb695
+		summarizeBy: none
+		sourceColumn: Type
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'records.id Missions'
+		dataType: string
+		displayFolder: Records
+		lineageTag: 32ced0b4-b434-45ef-9f05-39f4a162a171
+		summarizeBy: none
+		sourceColumn: records.id Missions
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'ID Missions'
+		dataType: string
+		displayFolder: Clés
+		lineageTag: 0bbc542b-fc37-4314-a6ac-0546eda6c372
+		summarizeBy: none
+		sourceColumn: ID Missions
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'records.id Clients'
+		dataType: string
+		displayFolder: Records
+		lineageTag: 1864883d-1787-4e59-8f73-7b80c0d54c6b
+		summarizeBy: none
+		sourceColumn: records.id Clients
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'ID Client'
+		dataType: string
+		displayFolder: Clés
+		lineageTag: 9ee20c92-d09f-4912-84e5-1f5b3f418ac8
+		summarizeBy: none
+		sourceColumn: ID Client
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Montant Net TTC'
+		dataType: double
+		formatString: #,0.00\ "€";-#,0.00\ "€";#,0.00\ "€"
+		displayFolder: Activité
+		lineageTag: a5b509c9-5fdb-4496-8b4d-b075812850b2
+		summarizeBy: sum
+		sourceColumn: Montant Net TTC
+
+		changedProperty = DataType
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"fr-FR"}
+
+	partition 'FACT ACTIVITES' = m
+		mode: import
+		source =
+				let
+				    Source =
+				        Json.Document(
+				            Web.Contents(
+				                "https://api.airtable.com",
+				                [
+				                    RelativePath = "v0/apph9UsvVXAEbLv6P/tbl3KTzm9CBjEVLVp",
+				                    Query = [ view = "MainView" ],
+				                    Headers = [
+				                        Authorization = "Bearer " & AirTableToken
+				                    ]
+				                ]
+				            )
+				        ),
+				    #"Converti en table" = Table.FromRecords({Source}),
+				    #"records développé" = Table.ExpandListColumn(#"Converti en table", "records"),
+				    #"records développé1" = Table.ExpandRecordColumn(#"records développé", "records", {"id", "createdTime", "fields"}, {"records.id", "records.createdTime", "records.fields"}),
+				    #"records.fields développé" = Table.ExpandRecordColumn(#"records développé1", "records.fields", {"ID ACTI", "Notes", "Client/Fournisseur", "Statut", "Pièces jointes", "Dâte", "Mode de Règlement", "Montant HT", "Montant TTC", "Lien", "TVA", "Catégories", "Année", "Libellé", "Num Activite", "Type", "Missions", "ID Missions (from Missions)", "Clients", "ID Client (from Clients)"}, {"records.fields.ID ACTI", "records.fields.Notes", "records.fields.Client/Fournisseur", "records.fields.Statut", "records.fields.Pièces jointes", "records.fields.Dâte", "records.fields.Mode de Règlement", "records.fields.Montant HT", "records.fields.Montant TTC", "records.fields.Lien", "records.fields.TVA", "records.fields.Catégories", "records.fields.Année", "records.fields.Libellé", "records.fields.Num Activite", "records.fields.Type", "records.fields.Missions", "records.fields.ID Missions (from Missions)", "records.fields.Clients", "records.fields.ID Client (from Clients)"}),
+				    #"Type modifié" = Table.TransformColumnTypes(#"records.fields développé",{{"records.id", type text}, {"records.createdTime", type datetime}, {"records.fields.ID ACTI", type text}, {"records.fields.Notes", type text}, {"records.fields.Client/Fournisseur", type text}, {"records.fields.Statut", type text}, {"records.fields.Pièces jointes", type any}, {"records.fields.Dâte", type date}, {"records.fields.Mode de Règlement", type text}, {"records.fields.Montant HT", type number}, {"records.fields.Montant TTC", type number}, {"records.fields.Lien", type text}, {"records.fields.TVA", type number}, {"records.fields.Catégories", type text}, {"records.fields.Année", Int64.Type}, {"records.fields.Libellé", type text}, {"records.fields.Num Activite", Int64.Type}, {"records.fields.Type", type text}, {"records.fields.Missions", type any}, {"records.fields.ID Missions (from Missions)", type any}, {"records.fields.Clients", type any}, {"records.fields.ID Client (from Clients)", type any}}),
+				    #"Colonnes supprimées" = Table.RemoveColumns(#"Type modifié",{"records.createdTime"}),
+				    #"Colonnes renommées" = Table.RenameColumns(#"Colonnes supprimées",{{"records.fields.ID ACTI", "ID ACTI"}}),
+				    #"Colonnes supprimées1" = Table.RemoveColumns(#"Colonnes renommées",{"records.fields.Notes", "records.fields.Pièces jointes"}),
+				    #"Colonnes renommées1" = Table.RenameColumns(#"Colonnes supprimées1",{{"records.fields.Dâte", "Dâte"}, {"records.fields.Montant HT", "Montant HT"}, {"records.fields.Montant TTC", "Montant TTC"}}),
+				    #"Colonnes supprimées2" = Table.RemoveColumns(#"Colonnes renommées1",{"records.fields.Lien"}),
+				    #"Colonnes renommées2" = Table.RenameColumns(#"Colonnes supprimées2",{{"records.fields.TVA", "Taux TVA"}, {"records.fields.Catégories", "Catégories"}}),
+				    #"Colonnes supprimées3" = Table.RemoveColumns(#"Colonnes renommées2",{"records.fields.Année", "records.fields.Num Activite"}),
+				    #"Colonnes renommées3" = Table.RenameColumns(#"Colonnes supprimées3",{{"records.fields.Type", "Type"}}),
+				    #"records.fields.Missions développé" = Table.ExpandListColumn(#"Colonnes renommées3", "records.fields.Missions"),
+				    #"records.fields.ID Missions (from Missions) développé" = Table.ExpandListColumn(#"records.fields.Missions développé", "records.fields.ID Missions (from Missions)"),
+				    #"records.fields.Clients développé" = Table.ExpandListColumn(#"records.fields.ID Missions (from Missions) développé", "records.fields.Clients"),
+				    #"records.fields.ID Client (from Clients) développé" = Table.ExpandListColumn(#"records.fields.Clients développé", "records.fields.ID Client (from Clients)"),
+				    #"Colonnes renommées4" = Table.RenameColumns(#"records.fields.ID Client (from Clients) développé",{{"records.fields.ID Client (from Clients)", "ID Client (from Clients)"}, {"records.fields.Clients", "records.id Clients"}, {"records.fields.ID Missions (from Missions)", "ID Missions (from Missions)"}, {"records.fields.Missions", "records.id Missions"}}),
+				    #"Colonnes supprimées4" = Table.RemoveColumns(#"Colonnes renommées4",{"records.fields.Libellé"}),
+				    #"Type modifié1" = Table.TransformColumnTypes(#"Colonnes supprimées4",{{"Taux TVA", Percentage.Type}}),
+				    #"Colonnes renommées5" = Table.RenameColumns(#"Type modifié1",{{"records.fields.Client/Fournisseur", "Client/Fournisseur"}, {"records.fields.Statut", "Statut"}, {"records.fields.Mode de Règlement", "Mode de Règlement"}, {"ID Missions (from Missions)", "ID Missions"}, {"ID Client (from Clients)", "ID Client"}}),
+				    #"Personnalisée ajoutée" = Table.AddColumn(#"Colonnes renommées5", "Montant Net TTC", each if [Type] = "Dépense" then -[Montant TTC] else [Montant TTC])
+				in
+				    #"Personnalisée ajoutée"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

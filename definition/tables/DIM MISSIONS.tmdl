@@ -1,0 +1,181 @@
+table 'DIM MISSIONS'
+	lineageTag: 8108d5eb-a859-469a-95ec-eaa5138c1202
+
+	measure 'Nb Jours Facturés Réels' = SUM('DIM MISSIONS'[Nb jours facturés]) + 0
+		formatString: 0
+		displayFolder: Mission
+		lineageTag: 5871eefa-3f70-4fa2-947b-fac2291b2e20
+
+	column 'records.id'
+		dataType: string
+		displayFolder: Records
+		lineageTag: 7d4edd17-dd69-48b5-86d1-880ad2b04a5e
+		summarizeBy: none
+		sourceColumn: records.id
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'ID Missions'
+		dataType: string
+		displayFolder: Clés
+		lineageTag: 9c664995-0a84-4dff-801b-bc46f11e1d45
+		summarizeBy: none
+		sourceColumn: ID Missions
+
+		annotation SummarizationSetBy = Automatic
+
+	column Type
+		dataType: string
+		displayFolder: Mission
+		lineageTag: 25b66279-f2eb-48bc-81f7-b43d1a96d0a1
+		summarizeBy: none
+		sourceColumn: Type
+
+		annotation SummarizationSetBy = Automatic
+
+	column Statut
+		dataType: string
+		displayFolder: Mission
+		lineageTag: f4b04201-04ba-45d4-ac53-6ddc476d42e6
+		summarizeBy: none
+		sourceColumn: Statut
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Date de début'
+		dataType: dateTime
+		formatString: Long Date
+		displayFolder: Mission
+		lineageTag: a85b96f4-1303-42b2-afff-60f38a92fdfa
+		summarizeBy: none
+		sourceColumn: Date de début
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Date de fin'
+		dataType: dateTime
+		formatString: Long Date
+		displayFolder: Mission
+		lineageTag: ceccbdca-6089-4348-8064-41e92cf59509
+		summarizeBy: none
+		sourceColumn: Date de fin
+
+		variation Variation
+			isDefault
+			relationship: 0201b8db-dba5-40cd-b156-cd0cdc2fdfb1
+			defaultHierarchy: LocalDateTable_e7b31b25-eee7-4ace-8b04-83d8f0fd5e9a.'Hiérarchie de dates'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Nb jours facturés'
+		dataType: int64
+		formatString: 0
+		displayFolder: Mission
+		lineageTag: bf3aa435-b78f-4048-bbf9-65d2459445e6
+		summarizeBy: sum
+		sourceColumn: Nb jours facturés
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'TJM HT'
+		dataType: int64
+		formatString: "€"\ #,0.00;-"€"\ #,0.00;"€"\ #,0.00
+		displayFolder: Mission
+		lineageTag: 71fe7e42-4aa1-407c-a692-618516ae8882
+		summarizeBy: sum
+		sourceColumn: TJM HT
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'CA HT'
+		dataType: int64
+		formatString: "€"\ #,0.00;-"€"\ #,0.00;"€"\ #,0.00
+		displayFolder: Mission
+		lineageTag: 7b599871-73f0-4cb6-8260-a5d4c6ae54da
+		summarizeBy: sum
+		sourceColumn: CA HT
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'records.id Finance'
+		dataType: string
+		displayFolder: Records
+		lineageTag: c64df2d0-0a76-410e-922e-86ddc5134d86
+		summarizeBy: none
+		sourceColumn: records.id Finance
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'records.id Taches'
+		dataType: string
+		displayFolder: Records
+		lineageTag: 138fb483-3826-4652-9eae-13eb52d210d7
+		summarizeBy: none
+		sourceColumn: records.id Taches
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'records.id Clients'
+		dataType: string
+		displayFolder: Records
+		lineageTag: 46e382fa-4493-4eba-b273-fd583e90373c
+		summarizeBy: none
+		sourceColumn: records.id Clients
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'ID Client'
+		dataType: string
+		displayFolder: Clés
+		lineageTag: 0d18a724-611e-4528-85e2-70c1d09503fc
+		summarizeBy: none
+		sourceColumn: ID Client
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'DIM MISSIONS' = m
+		mode: import
+		source =
+				let
+				    Source =
+				        Json.Document(
+				            Web.Contents(
+				                "https://api.airtable.com",
+				                [
+				                    RelativePath = "v0/apph9UsvVXAEbLv6P/tblh76Ei7GrLFcvtz",
+				                    Query = [ view = "MainView" ],
+				                    Headers = [
+				                        Authorization = "Bearer " & AirTableToken
+				                    ]
+				                ]
+				            )
+				        ),
+				    #"Converti en table" = Table.FromRecords({Source}),
+				    #"records développé" = Table.ExpandListColumn(#"Converti en table", "records"),
+				    #"records développé1" = Table.ExpandRecordColumn(#"records développé", "records", {"id", "createdTime", "fields"}, {"records.id", "records.createdTime", "records.fields"}),
+				    #"records.fields développé" = Table.ExpandRecordColumn(#"records développé1", "records.fields", {"ID Missions", "Type", "Statut", "Fiche de poste", "Date de début", "Date de fin", "Nb jours facturés", "TJM HT", "CA HT", "Num Missions", "Finance", "Taches", "Clients", "ID Client (from Clients)"}, {"records.fields.ID Missions", "records.fields.Type", "records.fields.Statut", "records.fields.Fiche de poste", "records.fields.Date de début", "records.fields.Date de fin", "records.fields.Nb jours facturés", "records.fields.TJM HT", "records.fields.CA HT", "records.fields.Num Missions", "records.fields.Finance", "records.fields.Taches", "records.fields.Clients", "records.fields.ID Client (from Clients)"}),
+				    #"Type modifié" = Table.TransformColumnTypes(#"records.fields développé",{{"records.id", type text}, {"records.createdTime", type datetime}, {"records.fields.ID Missions", type text}, {"records.fields.Type", type text}, {"records.fields.Statut", type text}, {"records.fields.Fiche de poste", type any}, {"records.fields.Date de début", type date}, {"records.fields.Date de fin", type date}, {"records.fields.Nb jours facturés", Int64.Type}, {"records.fields.TJM HT", Int64.Type}, {"records.fields.CA HT", Int64.Type}, {"records.fields.Num Missions", Int64.Type}, {"records.fields.Finance", type any}, {"records.fields.Taches", type any}, {"records.fields.Clients", type any}, {"records.fields.ID Client (from Clients)", type any}}),
+				    #"Colonnes supprimées" = Table.RemoveColumns(#"Type modifié",{"records.createdTime"}),
+				    #"Colonnes renommées" = Table.RenameColumns(#"Colonnes supprimées",{{"records.fields.ID Missions", "ID Missions"}, {"records.fields.Type", "Type"}, {"records.fields.Statut", "Statut"}}),
+				    #"records.fields.Fiche de poste développé" = Table.ExpandListColumn(#"Colonnes renommées", "records.fields.Fiche de poste"),
+				    #"Colonnes supprimées1" = Table.RemoveColumns(#"records.fields.Fiche de poste développé",{"records.fields.Fiche de poste"}),
+				    #"Colonnes renommées1" = Table.RenameColumns(#"Colonnes supprimées1",{{"records.fields.Date de début", "Date de début"}, {"records.fields.Date de fin", "Date de fin"}, {"records.fields.Nb jours facturés", "Nb jours facturés"}, {"records.fields.TJM HT", "TJM HT"}, {"records.fields.CA HT", "CA HT"}}),
+				    #"Colonnes supprimées2" = Table.RemoveColumns(#"Colonnes renommées1",{"records.fields.Num Missions"}),
+				    #"records.fields.Finance développé" = Table.ExpandListColumn(#"Colonnes supprimées2", "records.fields.Finance"),
+				    #"records.fields.Taches développé" = Table.ExpandListColumn(#"records.fields.Finance développé", "records.fields.Taches"),
+				    #"Colonnes renommées2" = Table.RenameColumns(#"records.fields.Taches développé",{{"records.fields.Finance", "records.id Finance"}, {"records.fields.Taches", "records.id Taches"}}),
+				    #"records.fields.Clients développé" = Table.ExpandListColumn(#"Colonnes renommées2", "records.fields.Clients"),
+				    #"Colonnes renommées3" = Table.RenameColumns(#"records.fields.Clients développé",{{"records.fields.Clients", "records.id Clients"}}),
+				    #"records.fields.ID Client (from Clients) développé" = Table.ExpandListColumn(#"Colonnes renommées3", "records.fields.ID Client (from Clients)"),
+				    #"Colonnes renommées4" = Table.RenameColumns(#"records.fields.ID Client (from Clients) développé",{{"records.fields.ID Client (from Clients)", "ID Client"}})
+				in
+				    #"Colonnes renommées4"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

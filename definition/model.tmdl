@@ -1,0 +1,31 @@
+model Model
+	culture: fr-FR
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: fr-FR
+	dataAccessOptions
+		fastCombine
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["FACT Business Plan","Mesures DAX","DIM PROSPECTION","FACT ACTIVITES","DIM TACHES","DIM MISSIONS","DIM CLIENTS","AirTableToken"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table 'FACT Business Plan'
+ref table DateTableTemplate_98e97090-5344-4a33-884c-bfcd4964f055
+ref table DIM-Calendar
+ref table 'Mesures DAX'
+ref table 'DIM PROSPECTION'
+ref table 'FACT ACTIVITES'
+ref table 'DIM TACHES'
+ref table LocalDateTable_cb1d2e3c-354c-4d99-b757-1c0ce89dd0d9
+ref table LocalDateTable_823fa5e9-584b-4e9b-9a01-e0ff79017cb3
+ref table LocalDateTable_4a3e413e-acc9-4c34-b523-a212794c3d7b
+ref table 'DIM MISSIONS'
+ref table LocalDateTable_e7b31b25-eee7-4ace-8b04-83d8f0fd5e9a
+ref table 'DIM CLIENTS'
+
+ref cultureInfo fr-FR
+

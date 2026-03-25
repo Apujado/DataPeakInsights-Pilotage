@@ -1,0 +1,160 @@
+table 'DIM TACHES'
+	lineageTag: ef13abd2-0c31-4b0b-8a59-78856e818201
+
+	column 'records.id'
+		dataType: string
+		displayFolder: Records
+		lineageTag: 284abe19-4d89-4559-aea4-22c4082ec81a
+		summarizeBy: none
+		sourceColumn: records.id
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'ID Taches'
+		dataType: string
+		displayFolder: Clés
+		lineageTag: d95ef057-763b-4d91-8ed9-0baf22594c3b
+		summarizeBy: none
+		sourceColumn: ID Taches
+
+		annotation SummarizationSetBy = Automatic
+
+	column Statut
+		dataType: string
+		displayFolder: Tache
+		lineageTag: e8ab4c5a-e00a-48f4-ab68-8e9ea67bffd7
+		summarizeBy: none
+		sourceColumn: Statut
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Date de début'
+		dataType: dateTime
+		formatString: Long Date
+		displayFolder: Tache
+		lineageTag: 9979f981-4249-4895-9747-8d55a1730ae3
+		summarizeBy: none
+		sourceColumn: Date de début
+
+		variation Variation
+			isDefault
+			relationship: 98cfb425-1a81-46e2-9bac-eef7ccb19056
+			defaultHierarchy: LocalDateTable_cb1d2e3c-354c-4d99-b757-1c0ce89dd0d9.'Hiérarchie de dates'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'Date Limite'
+		dataType: dateTime
+		formatString: Long Date
+		displayFolder: Tache
+		lineageTag: 8855029e-6cb6-4cb6-8d10-14924575006f
+		summarizeBy: none
+		sourceColumn: Date Limite
+
+		variation Variation
+			isDefault
+			relationship: 53c07d99-ce31-44d1-9039-9db1a181c09c
+			defaultHierarchy: LocalDateTable_823fa5e9-584b-4e9b-9a01-e0ff79017cb3.'Hiérarchie de dates'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Catégorie
+		dataType: string
+		displayFolder: Tache
+		lineageTag: 0ac8892c-ff9e-4aef-8875-0d769338aef8
+		summarizeBy: none
+		sourceColumn: Catégorie
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Date de Fin'
+		dataType: dateTime
+		formatString: Long Date
+		displayFolder: Tache
+		lineageTag: f5667cb4-4be1-4b52-a2b5-2e1ae3f01daf
+		summarizeBy: none
+		sourceColumn: Date de Fin
+
+		variation Variation
+			isDefault
+			relationship: be993405-f3a3-4ddf-8fb1-06cbf6e3005c
+			defaultHierarchy: LocalDateTable_4a3e413e-acc9-4c34-b523-a212794c3d7b.'Hiérarchie de dates'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'ID Finance'
+		dataType: string
+		displayFolder: Clés
+		lineageTag: d0348f5e-afbf-435b-948d-f909524f8196
+		summarizeBy: none
+		sourceColumn: ID Finance
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'records.id Missions'
+		dataType: string
+		displayFolder: Records
+		lineageTag: b93d8828-ad6d-4b4f-b55b-b97fff1ae6c8
+		summarizeBy: none
+		sourceColumn: records.id Missions
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'ID Missions'
+		dataType: string
+		displayFolder: Clés
+		lineageTag: 8e612fbc-28bb-4a68-8543-acea2c1fbf37
+		summarizeBy: none
+		sourceColumn: ID Missions
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'DIM TACHES' = m
+		mode: import
+		source =
+				let
+				    Source =
+				        Json.Document(
+				            Web.Contents(
+				                "https://api.airtable.com",
+				                [
+				                    RelativePath = "v0/apph9UsvVXAEbLv6P/tblhYngcp2z3MnfQq",
+				                    Query = [ view = "MainView" ],
+				                    Headers = [
+				                        Authorization = "Bearer " & AirTableToken
+				                    ]
+				                ]
+				            )
+				        ),
+				    #"Converti en table" = Table.FromRecords({Source}),
+				    #"records développé" = Table.ExpandListColumn(#"Converti en table", "records"),
+				    #"records développé1" = Table.ExpandRecordColumn(#"records développé", "records", {"id", "createdTime", "fields"}, {"records.id", "records.createdTime", "records.fields"}),
+				    #"records.fields développé" = Table.ExpandRecordColumn(#"records développé1", "records.fields", {"ID Taches", "Notes", "Statut", "Date de début", "Ressources", "Budget", "Date Limite", "Temps", "Catégorie", "Date de Fin", "Lien", "Taches", "Num Taches", "Finance", "Missions", "ID Missions (from Missions)"}, {"records.fields.ID Taches", "records.fields.Notes", "records.fields.Statut", "records.fields.Date de début", "records.fields.Ressources", "records.fields.Budget", "records.fields.Date Limite", "records.fields.Temps", "records.fields.Catégorie", "records.fields.Date de Fin", "records.fields.Lien", "records.fields.Taches", "records.fields.Num Taches", "records.fields.Finance", "records.fields.Missions", "records.fields.ID Missions (from Missions)"}),
+				    #"Type modifié" = Table.TransformColumnTypes(#"records.fields développé",{{"records.id", type text}, {"records.createdTime", type datetime}, {"records.fields.ID Taches", type text}, {"records.fields.Notes", type text}, {"records.fields.Statut", type text}, {"records.fields.Date de début", type date}, {"records.fields.Ressources", type text}, {"records.fields.Budget", Int64.Type}, {"records.fields.Date Limite", type date}, {"records.fields.Temps", Int64.Type}, {"records.fields.Catégorie", type text}, {"records.fields.Date de Fin", type date}, {"records.fields.Lien", type text}, {"records.fields.Taches", type text}, {"records.fields.Num Taches", Int64.Type}, {"records.fields.Finance", type text}, {"records.fields.Missions", type any}, {"records.fields.ID Missions (from Missions)", type any}}),
+				    #"Colonnes supprimées" = Table.RemoveColumns(#"Type modifié",{"records.createdTime"}),
+				    #"Colonnes renommées" = Table.RenameColumns(#"Colonnes supprimées",{{"records.fields.ID Taches", "ID Taches"}}),
+				    #"Colonnes supprimées1" = Table.RemoveColumns(#"Colonnes renommées",{"records.fields.Notes"}),
+				    #"Colonnes renommées1" = Table.RenameColumns(#"Colonnes supprimées1",{{"records.fields.Statut", "Statut"}, {"records.fields.Date de début", "Date de début"}}),
+				    #"Colonnes supprimées2" = Table.RemoveColumns(#"Colonnes renommées1",{"records.fields.Ressources", "records.fields.Budget"}),
+				    #"Colonnes renommées2" = Table.RenameColumns(#"Colonnes supprimées2",{{"records.fields.Date Limite", "Date Limite"}}),
+				    #"Colonnes supprimées3" = Table.RemoveColumns(#"Colonnes renommées2",{"records.fields.Temps"}),
+				    #"Colonnes renommées3" = Table.RenameColumns(#"Colonnes supprimées3",{{"records.fields.Catégorie", "Catégorie"}, {"records.fields.Date de Fin", "Date de Fin"}}),
+				    #"Colonnes supprimées4" = Table.RemoveColumns(#"Colonnes renommées3",{"records.fields.Lien", "records.fields.Taches", "records.fields.Num Taches"}),
+				    #"Colonnes renommées4" = Table.RenameColumns(#"Colonnes supprimées4",{{"records.fields.Finance", "ID Finance"}}),
+				    #"records.fields.Missions développé" = Table.ExpandListColumn(#"Colonnes renommées4", "records.fields.Missions"),
+				    #"Colonnes renommées5" = Table.RenameColumns(#"records.fields.Missions développé",{{"records.fields.Missions", "records.id Missions"}}),
+				    #"records.fields.ID Missions (from Missions) développé" = Table.ExpandListColumn(#"Colonnes renommées5", "records.fields.ID Missions (from Missions)"),
+				    #"Colonnes renommées6" = Table.RenameColumns(#"records.fields.ID Missions (from Missions) développé",{{"records.fields.ID Missions (from Missions)", "ID Missions"}})
+				in
+				    #"Colonnes renommées6"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

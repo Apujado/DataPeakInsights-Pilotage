@@ -1,0 +1,172 @@
+table 'DIM CLIENTS'
+	lineageTag: 570c2b3a-5c52-4abc-aab4-b69efdda02d5
+
+	measure 'Evolution Transformation' =
+			
+			VAR _MTD = [Taux Transformation MTD]
+			VAR _M1 = [Taux Transformation M-1]
+			RETURN
+			IF(
+			    _M1 > 0,
+			    DIVIDE(_MTD - _M1, _M1),
+			    BLANK() // On laisse vide si pas de données le mois précédent pour ne pas fausser le KPI
+			)
+		formatString: 0\ %;-0\ %;0\ %
+		lineageTag: 9c851908-766a-419c-b749-6151ceafb3eb
+
+	measure 'Délai Moyen Conversion (Jours)' =
+			
+			CALCULATE(
+			    AVERAGEX(
+			        'DIM CLIENTS',
+			        DATEDIFF(
+			            RELATED('DIM PROSPECTION'[records.fields.Date 1er contact]),
+			            'DIM CLIENTS'[Date Création],
+			            DAY
+			        )
+			    ),
+			    USERELATIONSHIP('DIM-Calendar'[Date], 'DIM CLIENTS'[Date Création])
+			)
+		lineageTag: 85633a17-e5ca-4422-8968-bed5967d23e1
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Délai Moyen M-1' = ```
+			
+			CALCULATE(
+			    [Délai Moyen Conversion (Jours)], 
+			    DATEADD('DIM-Calendar'[Date], -1, MONTH)
+			)
+			```
+		lineageTag: b3f3ae3a-50b0-4e61-80f3-94c0026d5af2
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Evolution Délai' =
+			
+			VAR _MTD = [Délai Moyen Conversion (Jours)]
+			VAR _M1 = CALCULATE([Délai Moyen Conversion (Jours)], DATEADD('DIM-Calendar'[Date], -1, MONTH))
+			RETURN
+			IF(_M1 > 0, DIVIDE(_MTD - _M1, _M1), BLANK())
+		formatString: 0.00\ %;-0.00\ %;0.00\ %
+		lineageTag: d90f5fa4-ede9-40a1-9d29-eb54820fd909
+
+	column 'records.id'
+		dataType: string
+		displayFolder: Records
+		lineageTag: 4780c78f-67b9-42da-8ac0-8c0b7133edf9
+		summarizeBy: none
+		sourceColumn: records.id
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'ID Client'
+		dataType: string
+		displayFolder: Clés
+		lineageTag: cc6dd58a-60e2-4ee6-8cde-bcbe65be9018
+		summarizeBy: none
+		sourceColumn: ID Client
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Date Création'
+		dataType: dateTime
+		formatString: Long Date
+		displayFolder: Prospect
+		lineageTag: ec144bbe-fc7d-411a-84c3-3459be2c48b9
+		summarizeBy: none
+		sourceColumn: Date Création
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column 'records.id Prospection'
+		dataType: string
+		displayFolder: Records
+		lineageTag: 7f56b048-a98d-49f3-832f-9d29c9d23efe
+		summarizeBy: none
+		sourceColumn: records.id Prospection
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'ID Prospects'
+		dataType: string
+		displayFolder: Clés
+		lineageTag: 0666af12-bb3c-4289-8f15-0fd88d5453b4
+		summarizeBy: none
+		sourceColumn: ID Prospects
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Noms Prospects'
+		dataType: string
+		displayFolder: Prospect
+		lineageTag: dfcbe04c-2478-47a3-a49c-5c7ae3ff7369
+		summarizeBy: none
+		sourceColumn: Noms Prospects
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'records.id Finance'
+		dataType: string
+		displayFolder: Records
+		lineageTag: e6c976c7-9ba8-44d6-ab72-e95a38c8717f
+		summarizeBy: none
+		sourceColumn: records.id Finance
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'records.id Missions'
+		dataType: string
+		displayFolder: Records
+		lineageTag: efb82408-146f-4fe0-906b-645d33b32402
+		summarizeBy: none
+		sourceColumn: records.id Missions
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'DIM CLIENTS' = m
+		mode: import
+		source =
+				let
+				    Source =
+				        Json.Document(
+				            Web.Contents(
+				                "https://api.airtable.com",
+				                [
+				                    RelativePath = "v0/apph9UsvVXAEbLv6P/tblOsdlEt8gCZjmLw",
+				                    Query = [ view = "MainView" ],
+				                    Headers = [
+				                        Authorization = "Bearer " & AirTableToken
+				                    ]
+				                ]
+				            )
+				        ),
+				    #"Converti en table" = Table.FromRecords({Source}),
+				    #"records développé" = Table.ExpandListColumn(#"Converti en table", "records"),
+				    #"records développé1" = Table.ExpandRecordColumn(#"records développé", "records", {"id", "createdTime", "fields"}, {"records.id", "records.createdTime", "records.fields"}),
+				    #"records.fields développé" = Table.ExpandRecordColumn(#"records développé1", "records.fields", {"ID Client", "Date Début", "Num Client", "Prospection", "ID Prospects (from Prospection)", "Noms Prospects (à partir de Prospection)", "Finance", "Missions"}, {"records.fields.ID Client", "records.fields.Date Début", "records.fields.Num Client", "records.fields.Prospection", "records.fields.ID Prospects (from Prospection)", "records.fields.Noms Prospects (à partir de Prospection)", "records.fields.Finance", "records.fields.Missions"}),
+				    #"Type modifié" = Table.TransformColumnTypes(#"records.fields développé",{{"records.id", type text}, {"records.createdTime", type datetime}, {"records.fields.ID Client", type text}, {"records.fields.Date Début", type datetime}, {"records.fields.Num Client", Int64.Type}, {"records.fields.Prospection", type any}, {"records.fields.ID Prospects (from Prospection)", type any}, {"records.fields.Noms Prospects (à partir de Prospection)", type any}, {"records.fields.Finance", type any}, {"records.fields.Missions", type any}}),
+				    #"Colonnes supprimées" = Table.RemoveColumns(#"Type modifié",{"records.createdTime"}),
+				    #"Colonnes renommées" = Table.RenameColumns(#"Colonnes supprimées",{{"records.fields.ID Client", "ID Client"}, {"records.fields.Date Début", "Date Début"}}),
+				    #"Colonnes supprimées1" = Table.RemoveColumns(#"Colonnes renommées",{"records.fields.Num Client"}),
+				    #"records.fields.Prospection développé" = Table.ExpandListColumn(#"Colonnes supprimées1", "records.fields.Prospection"),
+				    #"Colonnes renommées1" = Table.RenameColumns(#"records.fields.Prospection développé",{{"records.fields.Prospection", "records.id Prospection"}}),
+				    #"records.fields.ID Prospects (from Prospection) développé" = Table.ExpandListColumn(#"Colonnes renommées1", "records.fields.ID Prospects (from Prospection)"),
+				    #"Colonnes renommées2" = Table.RenameColumns(#"records.fields.ID Prospects (from Prospection) développé",{{"records.fields.ID Prospects (from Prospection)", "ID Prospects (from Prospection)"}}),
+				    #"records.fields.Noms Prospects (à partir de Prospection) développé" = Table.ExpandListColumn(#"Colonnes renommées2", "records.fields.Noms Prospects (à partir de Prospection)"),
+				    #"Colonnes renommées3" = Table.RenameColumns(#"records.fields.Noms Prospects (à partir de Prospection) développé",{{"records.fields.Noms Prospects (à partir de Prospection)", "Noms Prospects (à partir de Prospection)"}}),
+				    #"records.fields.Finance développé" = Table.ExpandListColumn(#"Colonnes renommées3", "records.fields.Finance"),
+				    #"Colonnes renommées4" = Table.RenameColumns(#"records.fields.Finance développé",{{"records.fields.Finance", "records.id Finance"}}),
+				    #"records.fields.Missions développé" = Table.ExpandListColumn(#"Colonnes renommées4", "records.fields.Missions"),
+				    #"Colonnes renommées5" = Table.RenameColumns(#"records.fields.Missions développé",{{"records.fields.Missions", "records.id Missions"}}),
+				    #"Type modifié1" = Table.TransformColumnTypes(#"Colonnes renommées5",{{"Date Début", type date}}),
+				    #"Colonnes renommées6" = Table.RenameColumns(#"Type modifié1",{{"Noms Prospects (à partir de Prospection)", "Noms Prospects"}, {"ID Prospects (from Prospection)", "ID Prospects"}, {"Date Début", "Date Création"}})
+				in
+				    #"Colonnes renommées6"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

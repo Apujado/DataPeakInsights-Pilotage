@@ -1,0 +1,126 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 1211.6308847196506,
+            "y": 378
+          },
+          "nodeIndex": "Mesures DAX",
+          "nodeLineageTag": "7529060f-d758-4e99-b486-6dff4d07c63b",
+          "size": {
+            "height": 72,
+            "width": 234
+          },
+          "zIndex": 4,
+          "expandedHeight": 104
+        },
+        {
+          "location": {
+            "x": 511.63088471965057,
+            "y": 474
+          },
+          "nodeIndex": "DIM-Calendar",
+          "nodeLineageTag": "37c736bb-89e5-48b2-848b-77427b566b8b",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 6
+        },
+        {
+          "location": {
+            "x": 897.63088471965034,
+            "y": 0
+          },
+          "nodeIndex": "DIM MISSIONS",
+          "nodeLineageTag": "8108d5eb-a859-469a-95ec-eaa5138c1202",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 8
+        },
+        {
+          "location": {
+            "x": 0,
+            "y": 365
+          },
+          "nodeIndex": "DIM PROSPECTION",
+          "nodeLineageTag": "5a9f78fa-5b4b-432e-b38a-78a46ffd35bf",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 2
+        },
+        {
+          "location": {
+            "x": 1199,
+            "y": 0
+          },
+          "nodeIndex": "DIM TACHES",
+          "nodeLineageTag": "ef13abd2-0c31-4b0b-8a59-78856e818201",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 3
+        },
+        {
+          "location": {
+            "x": 512.76464982286325,
+            "y": 0
+          },
+          "nodeIndex": "FACT ACTIVITES",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 5
+        },
+        {
+          "location": {
+            "x": 900.74199583076165,
+            "y": 405.8888888888888
+          },
+          "nodeIndex": "FACT Business Plan",
+          "nodeLineageTag": "8d0bfbfc-8c03-42b2-abb0-0991656a7dd1",
+          "size": {
+            "height": 345,
+            "width": 234
+          },
+          "zIndex": 7
+        },
+        {
+          "location": {
+            "x": 0,
+            "y": 0
+          },
+          "nodeIndex": "DIM CLIENTS",
+          "nodeLineageTag": "570c2b3a-5c52-4abc-aab4-b69efdda02d5",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 1
+        }
+      ],
+      "name": "Toutes les tables",
+      "zoomValue": 90,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "Toutes les tables",
+  "defaultDiagram": "Toutes les tables"
+}

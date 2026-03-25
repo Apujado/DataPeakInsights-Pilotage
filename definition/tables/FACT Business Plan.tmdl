@@ -1,0 +1,173 @@
+table 'FACT Business Plan'
+	lineageTag: 8d0bfbfc-8c03-42b2-abb0-0991656a7dd1
+
+	column Mois
+		dataType: int64
+		formatString: 0
+		displayFolder: Date
+		lineageTag: 0161f510-4711-46ff-a384-8f6c2389bd43
+		summarizeBy: sum
+		sourceColumn: Mois
+
+		annotation SummarizationSetBy = Automatic
+
+	column Jours
+		dataType: int64
+		formatString: 0
+		displayFolder: Objectivé
+		lineageTag: 7b02095a-29c5-4553-b4af-b21abcdcccfa
+		summarizeBy: sum
+		sourceColumn: Jours
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'TJM Moyen'
+		dataType: int64
+		formatString: 0
+		displayFolder: Objectivé
+		lineageTag: a87c1c25-4547-4510-9430-0ad8cc790def
+		summarizeBy: sum
+		sourceColumn: TJM Moyen
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'CA HT'
+		dataType: int64
+		formatString: 0
+		displayFolder: Objectivé
+		lineageTag: 741e27a9-1bd4-433f-9526-f75c98c1c1ed
+		summarizeBy: sum
+		sourceColumn: CA HT
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Salaire Max'
+		dataType: double
+		displayFolder: Objectivé
+		lineageTag: 212a827c-87ee-4292-a662-fa551c7ec54f
+		summarizeBy: sum
+		sourceColumn: Salaire Max
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Salaire
+		dataType: double
+		displayFolder: Objectivé
+		lineageTag: b0105e61-2d4e-4e25-bfab-e9c486558540
+		summarizeBy: sum
+		sourceColumn: Salaire
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Trésorerie
+		dataType: double
+		displayFolder: Objectivé
+		lineageTag: 582919a8-0074-40e1-957f-529c57aa339f
+		summarizeBy: sum
+		sourceColumn: Trésorerie
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Salaire Versé'
+		dataType: double
+		displayFolder: Réalisé
+		lineageTag: 7e878e70-30de-48d3-91e1-5023aff6ffdc
+		summarizeBy: sum
+		sourceColumn: Salaire Versé
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Tréso
+		dataType: double
+		displayFolder: Réalisé
+		lineageTag: 5c8709ff-9691-466c-8421-b3de3d0aa4fc
+		summarizeBy: sum
+		sourceColumn: Tréso
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Année
+		dataType: int64
+		formatString: 0
+		displayFolder: Date
+		lineageTag: a413932d-4706-45e3-ade9-d69a44b98ee9
+		summarizeBy: sum
+		sourceColumn: Année
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Fin de Mois'
+		dataType: dateTime
+		formatString: General Date
+		displayFolder: Date
+		lineageTag: 2cd7c456-5e2a-4d2f-8ca1-193f2643d44b
+		summarizeBy: none
+		sourceColumn: Fin de Mois
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'FACT Business Plan' = m
+		mode: import
+		source =
+				let
+				    Source = Excel.Workbook(File.Contents("C:\Users\pujad\OneDrive - APS Consult\Documents\PRO\DataPeakInsights\ADMIN\2026 Goals .xlsx"), null, true),
+				    Plan_Sheet = Source{[Item="Plan",Kind="Sheet"]}[Data],
+				    #"Type modifié" = Table.TransformColumnTypes(Plan_Sheet,{{"Column1", type text}, {"Column2", type text}, {"Column3", type any}, {"Column4", type any}, {"Column5", type any}, {"Column6", type any}, {"Column7", Int64.Type}, {"Column8", type any}, {"Column9", type any}, {"Column10", type any}, {"Column11", type any}, {"Column12", type any}, {"Column13", type any}, {"Column14", type any}, {"Column15", type any}, {"Column16", type any}, {"Column17", type any}, {"Column18", type any}, {"Column19", type any}, {"Column20", type any}, {"Column21", type any}}),
+				    #"Table transposée" = Table.Transpose(#"Type modifié"),
+				    #"Colonnes supprimées" = Table.RemoveColumns(#"Table transposée",{"Column1", "Column2"}),
+				    #"Colonnes renommées" = Table.RenameColumns(#"Colonnes supprimées",{{"Column4", "Objectif Jours"}}),
+				    #"Type modifié1" = Table.TransformColumnTypes(#"Colonnes renommées",{{"Objectif Jours", Int64.Type}}),
+				    #"Colonnes renommées1" = Table.RenameColumns(#"Type modifié1",{{"Column5", "Objectif TJM Moyen"}}),
+				    #"Type modifié2" = Table.TransformColumnTypes(#"Colonnes renommées1",{{"Objectif TJM Moyen", Int64.Type}}),
+				    #"Colonnes renommées2" = Table.RenameColumns(#"Type modifié2",{{"Column6", "Objectif CA TTC"}}),
+				    #"Type modifié3" = Table.TransformColumnTypes(#"Colonnes renommées2",{{"Objectif CA TTC", Int64.Type}}),
+				    #"Colonnes renommées3" = Table.RenameColumns(#"Type modifié3",{{"Column7", "Objectif Salaire"}}),
+				    #"Type modifié4" = Table.TransformColumnTypes(#"Colonnes renommées3",{{"Objectif Salaire", type number}}),
+				    #"Colonnes renommées4" = Table.RenameColumns(#"Type modifié4",{{"Column8", "Objectif Salaire Verse"}, {"Objectif Salaire", "Objectif Salaire Max"}}),
+				    #"Type modifié5" = Table.TransformColumnTypes(#"Colonnes renommées4",{{"Objectif Salaire Verse", type number}}),
+				    #"Colonnes supprimées1" = Table.RemoveColumns(#"Type modifié5",{"Column9"}),
+				    #"Colonnes renommées5" = Table.RenameColumns(#"Colonnes supprimées1",{{"Column10", "Objectif Treso"}}),
+				    #"Type modifié6" = Table.TransformColumnTypes(#"Colonnes renommées5",{{"Objectif Treso", type number}}),
+				    #"Colonnes supprimées2" = Table.RemoveColumns(#"Type modifié6",{"Column11"}),
+				    #"Colonnes renommées6" = Table.RenameColumns(#"Colonnes supprimées2",{{"Column12", "Jours Factures"}, {"Column13", "TJM Moyen TTC"}, {"Column14", "CA TTC"}, {"Column15", "Salaire Verse"}, {"Column16", "Treso"}}),
+				    #"Colonnes supprimées3" = Table.RemoveColumns(#"Colonnes renommées6",{"Column17"}),
+				    #"Colonnes renommées7" = Table.RenameColumns(#"Colonnes supprimées3",{{"Column18", "Ecart Jours Facturés"}, {"Salaire Verse", "Salaire Versé"}, {"Objectif Salaire Verse", "Objectif Salaire Versé"}, {"Objectif Treso", "Objectif Tréso"}, {"Treso", "Tréso"}, {"Column19", "Ecart TJM Moyen"}}),
+				    #"Type modifié7" = Table.TransformColumnTypes(#"Colonnes renommées7",{{"Ecart Jours Facturés", Int64.Type}, {"Tréso", type number}, {"Salaire Versé", type number}, {"CA TTC", type number}, {"TJM Moyen TTC", type number}, {"Ecart TJM Moyen", type number}}),
+				    #"Colonnes renommées8" = Table.RenameColumns(#"Type modifié7",{{"Column20", "Ecart CA"}}),
+				    #"Type modifié8" = Table.TransformColumnTypes(#"Colonnes renommées8",{{"Ecart CA", type number}}),
+				    #"Colonnes renommées9" = Table.RenameColumns(#"Type modifié8",{{"Column21", "Ecart Tréso"}}),
+				    #"Type modifié9" = Table.TransformColumnTypes(#"Colonnes renommées9",{{"Ecart Tréso", type number}}),
+				    #"Colonnes supprimées4" = Table.RemoveColumns(#"Type modifié9",{"Column22", "Column23", "Column24", "Column38", "Column36", "Column35", "Column37", "Column34", "Column33", "Column32", "Column31", "Column30", "Column29", "Column28", "Column27", "Column26", "Column25"}),
+				    #"Colonnes renommées10" = Table.RenameColumns(#"Colonnes supprimées4",{{"Column3", "Mois"}}),
+				    #"Type modifié10" = Table.TransformColumnTypes(#"Colonnes renommées10",{{"Mois", type text}}),
+				    #"Lignes filtrées" = Table.SelectRows(#"Type modifié10", each [Mois] <> null and [Mois] <> ""),
+				    #"Duplication de la colonne" = Table.DuplicateColumn(#"Lignes filtrées", "Mois", "Mois - Copier"),
+				    #"Type modifié11" = Table.TransformColumnTypes(#"Duplication de la colonne",{{"Mois", type date}}),
+				    #"Erreurs supprimées" = Table.RemoveRowsWithErrors(#"Type modifié11", {"Mois"}),
+				    #"Fin de mois insérée" = Table.AddColumn(#"Erreurs supprimées", "Fin du mois", each Date.EndOfMonth([Mois]), type date),
+				    #"Colonnes permutées" = Table.ReorderColumns(#"Fin de mois insérée",{"Fin du mois", "Mois", "Objectif Jours", "Objectif TJM Moyen", "Objectif CA TTC", "Objectif Salaire Max", "Objectif Salaire Versé", "Objectif Tréso", "Jours Factures", "TJM Moyen TTC", "CA TTC", "Salaire Versé", "Tréso", "Ecart Jours Facturés", "Ecart TJM Moyen", "Ecart CA", "Ecart Tréso", "Mois - Copier"}),
+				    #"Mois extrait" = Table.TransformColumns(#"Colonnes permutées",{{"Mois", Date.Month, Int64.Type}}),
+				    #"Année extraite" = Table.TransformColumns(#"Mois extrait",{{"Fin du mois", Date.Year, Int64.Type}}),
+				    #"Colonnes supprimées5" = Table.RemoveColumns(#"Année extraite",{"Mois - Copier", "Jours Factures", "TJM Moyen TTC", "CA TTC", "Ecart Jours Facturés", "Ecart TJM Moyen", "Ecart CA", "Ecart Tréso"}),
+				    #"Colonnes renommées11" = Table.RenameColumns(#"Colonnes supprimées5",{{"Fin du mois", "Année"}}),
+				    #"Colonne fusionnée insérée" = Table.AddColumn(#"Colonnes renommées11", "Fusionné", each Text.Combine({Text.From([Mois], "fr-FR"), "/", Text.From([Année], "fr-FR")}), type text),
+				    #"Type modifié12" = Table.TransformColumnTypes(#"Colonne fusionnée insérée",{{"Fusionné", type datetime}}),
+				    #"Fin du mois calculée" = Table.TransformColumns(#"Type modifié12",{{"Fusionné", Date.EndOfMonth, type datetime}}),
+				    #"Colonnes renommées12" = Table.RenameColumns(#"Fin du mois calculée",{{"Fusionné", "Fin de Mois"}, {"Objectif CA TTC", "CA HT"}, {"Objectif Jours", "Jours"}, {"Objectif Salaire Max", "Salaire Max"}, {"Objectif TJM Moyen", "TJM Moyen"}, {"Objectif Salaire Versé", "Salaire"}, {"Objectif Tréso", "Trésorerie"}})
+				in
+				    #"Colonnes renommées12"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

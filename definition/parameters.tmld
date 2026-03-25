@@ -1,0 +1,3 @@
+/// Paramètre sécurisé pour l'API Airtable
+parameter 'AirTableToken' = "REPLACE_ME_IN_POWERBI_DESKTOP"
+    type: text

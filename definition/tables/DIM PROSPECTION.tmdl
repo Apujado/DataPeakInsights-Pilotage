@@ -91,9 +91,8 @@ table 'DIM PROSPECTION'
 				let
 				    Source = Json.Document(
 				        Web.Contents(
-				            "https://api.airtable.com",
+				            "https://api.airtable.com/v0/apph9UsvVXAEbLv6P/tbluSUrzLQ907x0TS",
 				            [
-				                RelativePath = "/v0/apph9UsvVXAEbLv6P/tbluSUrzLQ907x0TS",
 				                Query = [ view = "MainView" ],
 				                Headers = [ Authorization = "Bearer " & AirTableToken ]
 				            ]

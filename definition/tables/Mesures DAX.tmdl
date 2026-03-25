@@ -8,7 +8,6 @@ table 'Mesures DAX'
 		formatString: General Date
 		displayFolder: Time Intelligence
 		lineageTag: 15eb63f2-5a40-4449-bec7-51da7f8b4922
-		description: Date du jour dynamique pour le rafraîchissement des données.
 
 	measure 'Frais Total TTC' =
 			
@@ -16,7 +15,6 @@ table 'Mesures DAX'
 			RETURN COALESCE(_Result, 0)
 		displayFolder: Finance
 		lineageTag: 519d9431-76dc-4b8f-8e5b-44021eb8e0c7
-		description: Somme des montants TTC classés comme Dépense.
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
@@ -27,11 +25,10 @@ table 'Mesures DAX'
 			RETURN _Recettes - _Frais
 		displayFolder: Finance
 		lineageTag: 5a7c07ca-31e5-494d-bfdb-549a355e0a97
-		description: Différence entre les recettes TTC et les frais totaux TTC.
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
-	measure 'Nb Clients Convertis MTD' = ```
+	measure 'Nb Clients Convertis MTD' =
 			
 			VAR _Result = TOTALMTD(
 			    CALCULATE(
@@ -44,38 +41,32 @@ table 'Mesures DAX'
 			    'DIM-Calendar'[Date]
 			)
 			RETURN COALESCE(_Result, 0)
-			```
 		formatString: 0
 		displayFolder: Prospection
 		lineageTag: 6cf980cc-4ebe-4e6c-b62f-0dfde9ee6eb4
-		description: Nombre de prospects transformés en clients sur le mois en cours.
 
-	measure 'Taux Transformation M-1' = ```
+	measure 'Taux Transformation M-1' =
 			
 			VAR _Result = CALCULATE(
 			    [Nb Clients Convertis MTD],
 			    DATEADD('DIM-Calendar'[Date], -1, MONTH)
 			)
 			RETURN COALESCE(_Result, 0)
-			```
 		displayFolder: Prospection
 		lineageTag: f755f450-52e9-49f3-bdb1-6549b4886b15
-		description: Nombre de clients convertis (MTD) sur le mois précédent (M-1).
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
-	measure 'Nb Prospects' = ```
+	measure 'Nb Prospects' =
 			
 			VAR _Result = CALCULATE(
 			    DISTINCTCOUNT('DIM PROSPECTION'[records.fields.ID Prospects]),
 			    USERELATIONSHIP('DIM PROSPECTION'[records.fields.Date 1er contact], 'DIM-Calendar'[Date])
 			)
 			RETURN COALESCE(_Result, 0)
-			```
 		formatString: 0
 		displayFolder: Prospection
 		lineageTag: c1dd85c8-d274-48b6-a895-7d2a0e47b50c
-		description: Nombre distinct de prospects basé sur la date de 1er contact.
 
 	measure 'Nb Clients' =
 			
@@ -87,19 +78,16 @@ table 'Mesures DAX'
 		formatString: 0
 		displayFolder: Clients
 		lineageTag: 65ecee27-9406-4554-8d3f-a59b3216ba38
-		description: Nombre distinct de clients actifs basé sur la date de création.
 
-	measure 'Recettes TTC' = ```
+	measure 'Recettes TTC' =
 			
 			VAR _Result = CALCULATE(
 			    SUM('FACT ACTIVITES'[Montant TTC]),
 			    'FACT ACTIVITES'[Type] = "Recette"
 			)
 			RETURN COALESCE(_Result, 0)
-			```
 		displayFolder: Finance
 		lineageTag: b0f26c45-001d-4273-a2b4-691ceb92dcc0
-		description: Somme des montants TTC classés comme Recette.
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
@@ -112,18 +100,15 @@ table 'Mesures DAX'
 			RETURN COALESCE(_Result, 0)
 		displayFolder: Finance
 		lineageTag: 28235a32-a10a-4b47-b0a2-198dd4f2e38e
-		description: Chiffre d'Affaires HT cumulé depuis le début de l'année (YTD) pour les Missions.
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
-	measure 'Dépenses  Signé' = ```
+	measure 'Dépenses  Signé' =
 			
 			VAR _Result = CALCULATE(SUM('FACT ACTIVITES'[Montant TTC]), 'FACT ACTIVITES'[Type] = "Dépense") * -1
 			RETURN COALESCE(_Result, 0)
-			```
 		displayFolder: Finance
 		lineageTag: 7e411a66-9444-437a-b4a0-9379a8fe9b1a
-		description: Montant négatif des dépenses TTC pour affichage comptable.
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
@@ -137,7 +122,6 @@ table 'Mesures DAX'
 		formatString: 0
 		displayFolder: Clients
 		lineageTag: cc7def22-e6a2-4d52-9ded-b086d01b7755
-		description: Nombre total de jours facturés pour les missions démarrées dans la période.
 
 	measure 'Nb Jours facturés Moyen' =
 			
@@ -146,7 +130,6 @@ table 'Mesures DAX'
 			RETURN DIVIDE(_Jours, _NbMissions, 0)
 		displayFolder: Clients
 		lineageTag: c1ca60e7-74a3-4e57-bda3-5f9c7730e894
-		description: Moyenne de jours facturés par mission.
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
@@ -156,32 +139,27 @@ table 'Mesures DAX'
 			RETURN COALESCE(_Result, 0)
 		displayFolder: Clients
 		lineageTag: 31ea7b38-4f25-47c2-829e-43decec31bff
-		description: Moyenne des jours facturés sur le mois précédent.
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
-	measure 'Tendance Nb Jours Fact Moyens' = ```
+	measure 'Tendance Nb Jours Fact Moyens' =
 			
 			VAR _Current = [Nb Jours facturés Moyen]
 			VAR _Prev = [Nb de Jours Fact Moy Mois Précédent]
 			RETURN _Current - _Prev
-			```
 		displayFolder: Clients
 		lineageTag: 2159233d-e560-452b-80dc-7d5ec2cf53bd
-		description: Variation absolue du nombre moyen de jours facturés vs mois précédent.
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
-	measure 'Tendance Nb Jours Fact Moyens %' = ```
+	measure 'Tendance Nb Jours Fact Moyens %' =
 			
 			VAR _Current = [Nb Jours facturés Moyen]
 			VAR _Prev = [Nb de Jours Fact Moy Mois Précédent]
 			RETURN
 			DIVIDE(_Current - _Prev, _Prev, 0)
-			```
 		displayFolder: Clients
 		lineageTag: 9f2e982e-7ac7-4cff-acdd-37455ba6d433
-		description: Variation en pourcentage du nombre moyen de jours facturés vs mois précédent.
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
@@ -198,7 +176,6 @@ table 'Mesures DAX'
 			)
 		displayFolder: Finance
 		lineageTag: f76b6064-0bdb-4d86-abb9-c1abb7689f0a
-		description: CA YTD filtré pour ne pas afficher les projections futures (arrête à la date du jour).
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
@@ -209,7 +186,6 @@ table 'Mesures DAX'
 			RETURN DIVIDE(_Clients, _Prospects, 0)
 		displayFolder: Prospection
 		lineageTag: 19af3094-17be-484e-90bd-9979b7be3d17
-		description: Ratio entre le nombre de clients et le nombre de prospects (MTD).
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
@@ -236,3 +212,4 @@ table 'Mesures DAX'
 	annotation PBI_ResultType = Table
 
 	annotation PBI_NavigationStepName = Navigation
+

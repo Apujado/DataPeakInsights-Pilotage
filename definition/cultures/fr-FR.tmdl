@@ -5047,16 +5047,6 @@ cultureInfo fr-FR
 			            },
 			            "Weight": 0.573
 			          }
-			        },
-			        {
-			          "Réalisé": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
 			        }
 			      ]
 			    },

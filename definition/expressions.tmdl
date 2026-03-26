@@ -1,8 +1,0 @@
-/// Texte
-expression AirTableToken = "REPLACE_ME" meta [IsParameterQuery=true, Type="Any", IsParameterQueryRequired=true]
-	lineageTag: d9197772-5255-4999-b361-418831e75a8a
-
-	annotation PBI_NavigationStepName = Navigation
-
-	annotation PBI_ResultType = Text
-
